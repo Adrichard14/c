@@ -55,7 +55,10 @@ int removeCarro(struct CarroPilha *p, int placa){
     if (aux == placa)
     {
       p->topo--;
-      printf("\n O carro com placa %d foi removido! \n", aux);
+      printf(" O carro com placa %d foi removido!", aux);
+      valueAux = rand() % ((150 + 1) - 100) + 100;
+      totalEstacionamento = totalEstacionamento + valueAux;
+      printf("(Pagou R$ %d) \n", valueAux);
     }else{
       int control = 1;
       while(control){
@@ -63,13 +66,14 @@ int removeCarro(struct CarroPilha *p, int placa){
         {
           p->topo--;
           printf("O carro com placa %d foi removido!", aux);
-          valueAux = rand() % ((200 + 1) - 100) + 100;
+          valueAux = rand() % ((150 + 1) - 100) + 100;
           totalEstacionamento = totalEstacionamento + valueAux;
           printf("(Pagou R$ %d) \n", valueAux);
           control = 0;
           while(CarroPilha_Vazia(auxPilha) == 0){
-            p->item[p->topo] = auxPilha->item[auxPilha->topo];
-            printf("O carro com placa %d voltou para o estacionamento! \n", p->item[p->topo]);
+            int aux2 = auxPilha->item[auxPilha->topo];
+            CarroPilha_Insere(p, aux2);
+            // printf("O carro com placa %d voltou para o estacionamento! \n", p->item[p->topo]);
             auxPilha->topo--;
           }
         }else{
@@ -86,6 +90,9 @@ int removeCarro(struct CarroPilha *p, int placa){
     
     return aux;
   }
+  free(auxPilha);
+  free(&aux);
+  free(&valueAux);
 }
 
     int CarroPilha_Remove(struct CarroPilha *p)
@@ -135,6 +142,21 @@ void addFuncionario(struct funcionarios *inicio)
   novo->proximo = NULL;
 
   aux->proximo = novo;
+}
+
+void removeFuncionario(struct funcionarios *inicio, struct funcionarios *inicio2)
+{
+  struct funcionarios *aux, *aux2, *novo;
+
+  aux = inicio;
+  aux2 = inicio2;
+  novo = aloca();
+  if (aux->proximo != NULL)
+  {
+    novo->proximo = aux->proximo;
+    printf("Funcionario %s \n", &aux->proximo->nome);
+    aux->proximo = aux->proximo->proximo;
+  }
 }
 
 void addFuncionarioMock(struct funcionarios *inicio, char * nomeL, int idadeL, int IDL)
@@ -190,12 +212,14 @@ int main()
   int value;
   struct funcionarios lista_funcionarios;
   lista_funcionarios.proximo = NULL;
-
+  struct funcionarios lista_funcionarios_aux;
+  lista_funcionarios_aux.proximo = NULL;
   struct CarroPilha *p = (struct CarroPilha *)malloc(sizeof(struct CarroPilha));
   CarroPilha_Inicia(p);
   addFuncionarioMock(&lista_funcionarios, "Adrian", 21, 1);
   addFuncionarioMock(&lista_funcionarios, "Andrey", 14, 2);
   addFuncionarioMock(&lista_funcionarios, "Taina", 20, 1);
+  printf("funcionário 1 %s", lista_funcionarios.proximo->nome);
   CarroPilha_Insere(p, 256);
   CarroPilha_Insere(p, 856);
   CarroPilha_Insere(p, 156);
@@ -204,8 +228,11 @@ int main()
   CarroPilha_Insere(p, 156);
   removeCarro(p, 156);
   removeCarro(p, 256);
-  if (checarMeta() == 1){
+  removeCarro(p, 251);
+  removeCarro(p, 857);
+  if (checarMeta() == 0){
     removeCarro(p, 857);
+    CarroPilha_Insere(p, 156);
   }
 
     printf("Valor do cash do estacionamento: %d", totalEstacionamento);
