@@ -1,0 +1,1 @@
+printf("Tamanho da pilha de carros: %d \n", p->topo + 1);
