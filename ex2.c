@@ -6,48 +6,63 @@
 time_t t;
 int totalEstacionamento = 0;
 
-struct CarroPilha{
-  int item[4];
+struct CarroPilha
+{
+  int item[5];
   int topo;
   struct CarroPilha *proximo;
 };
-void CarroPilha_Inicia (struct CarroPilha *p) {
+void CarroPilha_Inicia(struct CarroPilha *p)
+{
   p->topo = -1;
 };
 
-int CarroPilha_Vazia (struct CarroPilha *p){
-  if(p->topo == -1){
+int CarroPilha_Vazia(struct CarroPilha *p)
+{
+  if (p->topo == -1)
+  {
     return 1;
-  } else
-      return 0;
+  }
+  else
+    return 0;
 };
 
-int CarroPilha_Cheia (struct CarroPilha *p){
-  if(p->topo == 3){
+int CarroPilha_Cheia(struct CarroPilha *p)
+{
+  if (p->topo == 4)
+  {
     return 1;
-  }else{
+  }
+  else
+  {
     return 0;
   }
 };
 
-void CarroPilha_Insere(struct CarroPilha *p, int x){
-  if(CarroPilha_Cheia(p)){
+void CarroPilha_Insere(struct CarroPilha *p, int x)
+{
+  if (CarroPilha_Cheia(p))
+  {
     printf("ERRO: O estacionamento esta cheio \n");
-  }else{
+  }
+  else
+  {
     p->topo++;
     p->item[p->topo] = x;
     printf("O carro com placa %i entrou no estacionamento \n", x);
   }
 };
 
-
-    int CarroPilha_Remove(struct CarroPilha *p)
+int CarroPilha_Remove(struct CarroPilha *p)
 {
   int aux;
-  if(CarroPilha_Vazia(p) == 1){
+  if (CarroPilha_Vazia(p) == 1)
+  {
     printf("ERRO: a pilha está vazia");
     exit(1);
-  }else{
+  }
+  else
+  {
     aux = p->item[p->topo];
     p->topo--;
     printf("O carro com placa %d foi removido! \n", aux);
@@ -105,7 +120,7 @@ void removeFuncionario(struct funcionarios *inicio, struct funcionarios *inicio2
   }
 }
 
-void addFuncionarioMock(struct funcionarios *inicio, char * nomeL, int idadeL, int IDL)
+void addFuncionarioMock(struct funcionarios *inicio, char *nomeL, int idadeL, int IDL)
 {
   struct funcionarios *aux, *novo;
   aux = inicio;
@@ -131,6 +146,13 @@ void addCarro(struct CarroPilha *p)
   scanf("%i", &placa);
   CarroPilha_Insere(p, placa);
 }
+float desempilhar(struct CarroPilha *p)
+{
+
+  float aux = p->item[p->topo];
+  p->topo--;
+  return aux;
+}
 int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct funcionarios *p1aux)
 {
   int aux;
@@ -151,7 +173,7 @@ int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct
       printf(" O carro com placa %d foi removido!", aux);
       valueAux = rand() % ((150 + 1) - 100) + 100;
       totalEstacionamento = totalEstacionamento + valueAux;
-      printf("(Pagou R$ %d)", valueAux);
+      printf("(Pagou R$ %d) \n", valueAux);
     }
     else
     {
@@ -167,7 +189,7 @@ int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct
           printf("(Pagou R$ %d)", valueAux);
           control = 0;
           removeFuncionario(p1, p1aux);
-          
+
           while (CarroPilha_Vazia(auxPilha) == 0)
           {
             int aux2 = auxPilha->item[auxPilha->topo];
@@ -196,13 +218,14 @@ int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct
 void removerTodos(struct CarroPilha *p)
 {
   int valueAux;
-    while(CarroPilha_Vazia(p) == 0){
-      printf(" O carro com placa %d foi removido!", p->item[p->topo]);
-      valueAux = rand() % ((150 + 1) - 100) + 100;
-      totalEstacionamento = totalEstacionamento + valueAux;
-      printf("(Pagou R$ %d) \n", valueAux);
-      p->topo--;
-    }
+  while (CarroPilha_Vazia(p) == 0)
+  {
+    printf(" O carro com placa %d foi removido!", p->item[p->topo]);
+    valueAux = rand() % ((150 + 1) - 100) + 100;
+    totalEstacionamento = totalEstacionamento + valueAux;
+    printf("(Pagou R$ %d) \n", valueAux);
+    p->topo--;
+  }
 }
 int checarMeta(struct CarroPilha *p)
 {
@@ -228,20 +251,23 @@ int main()
   lista_funcionarios_aux.proximo = NULL;
   struct CarroPilha *p = (struct CarroPilha *)malloc(sizeof(struct CarroPilha));
   CarroPilha_Inicia(p);
-  addFuncionarioMock(&lista_funcionarios, "Adrian", 21, 1);
-  addFuncionarioMock(&lista_funcionarios, "Andrey", 14, 2);
-  addFuncionarioMock(&lista_funcionarios, "Taina", 20, 1);
+  addFuncionarioMock(&lista_funcionarios, "F1", 21, 1);
+  addFuncionarioMock(&lista_funcionarios, "F2", 14, 2);
+  addFuncionarioMock(&lista_funcionarios, "F3", 20, 3);
+  addFuncionarioMock(&lista_funcionarios, "F4", 21, 4);
+  addFuncionarioMock(&lista_funcionarios, "F5", 14, 5);
+  addFuncionarioMock(&lista_funcionarios, "F6", 20, 6);
+  CarroPilha_Insere(p, 99);
   CarroPilha_Insere(p, 100);
   CarroPilha_Insere(p, 101);
   CarroPilha_Insere(p, 102);
-  CarroPilha_Insere(p, 103);
-  CarroPilha_Insere(p, 104);
-  removeCarro(p, 102, &lista_funcionarios, &lista_funcionarios_aux);
+  CarroPilha_Insere(p, 105);
+  removeCarro(p, 105, &lista_funcionarios, &lista_funcionarios_aux);
   removeCarro(p, 101, &lista_funcionarios, &lista_funcionarios_aux);
-  removeCarro(p, 100, &lista_funcionarios, &lista_funcionarios_aux);
+  removeCarro(p, 102, &lista_funcionarios, &lista_funcionarios_aux);
   if (checarMeta(p) == 0)
   {
-    removeCarro(p, 104, &lista_funcionarios, &lista_funcionarios_aux);
+    removeCarro(p, 156, &lista_funcionarios, &lista_funcionarios_aux);
   }
   free(p);
 }
