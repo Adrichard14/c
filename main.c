@@ -6,48 +6,144 @@
 time_t t;
 int totalEstacionamento = 0;
 
-struct CarroPilha{
+// Tabela hash
+
+// Hash* criarHash(int SIZE);
+// void liberaHash(Hash* ha);
+// int valorString (char *str);
+// int insereHash_SemColisao(Hash* ha, struct CarroPilha p);
+// int buscaHash_SemColisao(Hash* ha, int mat, struct CarroPilha* p);
+
+struct hash
+{
+  int SIZE;
+  int itens[20];
+  int qtd;
+};
+typedef struct hash Hash;
+
+Hash *criaHash(int SIZE)
+{
+  Hash *ha = (Hash*)malloc(sizeof(Hash*));
+  if (ha != NULL)
+  {
+    int i;
+    ha->SIZE = SIZE;
+    ha->itens = (struct CarroPilha **)malloc(SIZE * sizeof(struct CarroPilha *));
+    if (ha->itens == NULL)
+    {
+      free(ha);
+      return NULL;
+    }
+    ha->qtd = 0;
+    for (i = 0; i < ha->SIZE; i++)
+      ha->itens[i] = NULL;
+  }
+  return ha;
+}
+
+void liberaHash(Hash *ha);
+
+void liberaHash(Hash *ha)
+{
+  if (ha != NULL)
+  {
+    int i;
+    for (i = 0; i < ha->SIZE; i++)
+    {
+      if (ha->itens[i] != NULL)
+        free(ha->itens[i]);
+    }
+    free(ha->itens);
+    free(ha);
+  }
+}
+
+int insereHash_SemColisao(Hash *ha, struct CarroPilha p)
+{
+  if (ha == NULL || ha->qtd == ha->SIZE)
+    return 0;
+  int chave = p->item[p->topo];
+  int pos = chaveDivisao(chave, ha->SIZE);
+  struct CarroPilha *novo;
+  novo = (struct CarroPilha *)malloc(sizeof(struct CarroPilha));
+  if (novo == NULL)
+    return 0;
+  *novo = al;
+  ha->itens[pos] = novo;
+  ha->qtd++;
+  return 1;
+}
+
+int buscaHash_SemColisao(Hash *ha, int mat, struct CarroPilha *p)
+{
+  if (ha == NULL)
+    return 0;
+
+  int pos = chaveDivisao(mat, ha->SIZE);
+  if (ha->itens[pos] == NULL)
+    return 0;
+  *p = *(ha->itens[pos]);
+  return 1;
+}
+
+struct CarroPilha
+{
   int item[4];
   int topo;
   struct CarroPilha *proximo;
 };
-void CarroPilha_Inicia (struct CarroPilha *p) {
+void CarroPilha_Inicia(struct CarroPilha *p)
+{
   p->topo = -1;
 };
 
-int CarroPilha_Vazia (struct CarroPilha *p){
-  if(p->topo == -1){
+int CarroPilha_Vazia(struct CarroPilha *p)
+{
+  if (p->topo == -1)
+  {
     return 1;
-  } else
-      return 0;
+  }
+  else
+    return 0;
 };
 
-int CarroPilha_Cheia (struct CarroPilha *p){
-  if(p->topo == 3){
+int CarroPilha_Cheia(struct CarroPilha *p)
+{
+  if (p->topo == 3)
+  {
     return 1;
-  }else{
+  }
+  else
+  {
     return 0;
   }
 };
 
-void CarroPilha_Insere(struct CarroPilha *p, int x){
-  if(CarroPilha_Cheia(p)){
+void CarroPilha_Insere(struct CarroPilha *p, int x)
+{
+  if (CarroPilha_Cheia(p))
+  {
     printf("ERRO: O estacionamento esta cheio \n");
-  }else{
+  }
+  else
+  {
     p->topo++;
     p->item[p->topo] = x;
     printf("O carro com placa %i entrou no estacionamento \n", x);
   }
 };
 
-
-    int CarroPilha_Remove(struct CarroPilha *p)
+int CarroPilha_Remove(struct CarroPilha *p)
 {
   int aux;
-  if(CarroPilha_Vazia(p) == 1){
+  if (CarroPilha_Vazia(p) == 1)
+  {
     printf("ERRO: a pilha está vazia");
     exit(1);
-  }else{
+  }
+  else
+  {
     aux = p->item[p->topo];
     p->topo--;
     printf("O carro com placa %d foi removido! \n", aux);
@@ -105,7 +201,7 @@ void removeFuncionario(struct funcionarios *inicio, struct funcionarios *inicio2
   }
 }
 
-void addFuncionarioMock(struct funcionarios *inicio, char * nomeL, int idadeL, int IDL)
+void addFuncionarioMock(struct funcionarios *inicio, char *nomeL, int idadeL, int IDL)
 {
   struct funcionarios *aux, *novo;
   aux = inicio;
@@ -167,7 +263,7 @@ int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct
           printf("(Pagou R$ %d)", valueAux);
           control = 0;
           removeFuncionario(p1, p1aux);
-          
+
           while (CarroPilha_Vazia(auxPilha) == 0)
           {
             int aux2 = auxPilha->item[auxPilha->topo];
@@ -196,13 +292,14 @@ int removeCarro(struct CarroPilha *p, int placa, struct funcionarios *p1, struct
 void removerTodos(struct CarroPilha *p)
 {
   int valueAux;
-    while(CarroPilha_Vazia(p) == 0){
-      printf(" O carro com placa %d foi removido!", p->item[p->topo]);
-      valueAux = rand() % ((150 + 1) - 100) + 100;
-      totalEstacionamento = totalEstacionamento + valueAux;
-      printf("(Pagou R$ %d) \n", valueAux);
-      p->topo--;
-    }
+  while (CarroPilha_Vazia(p) == 0)
+  {
+    printf(" O carro com placa %d foi removido!", p->item[p->topo]);
+    valueAux = rand() % ((150 + 1) - 100) + 100;
+    totalEstacionamento = totalEstacionamento + valueAux;
+    printf("(Pagou R$ %d) \n", valueAux);
+    p->topo--;
+  }
 }
 int checarMeta(struct CarroPilha *p)
 {
@@ -219,6 +316,9 @@ int checarMeta(struct CarroPilha *p)
 }
 int main()
 {
+  Hash *ha = criaHash(1427);
+  int x = insereHash_SemColisao(ha, p);
+  int z = buscaHash_SemColisao(ha, mat, &p);
 
   int resp;
   int value;
